@@ -10,5 +10,14 @@ import { createRoot } from "react-dom/client";
     setBaseUrl(import.meta.env.VITE_API_URL);
   }
 
+  // Silently wake up the Render backend as soon as the app loads.
+  // Render free tier sleeps after inactivity — this ping warms it up
+  // in the background so signup/login feel instant when the user submits.
+  if (import.meta.env.VITE_API_URL) {
+    fetch(`${import.meta.env.VITE_API_URL}/api/healthz`, { method: "GET" }).catch(() => {
+      // Ignore errors — this is just a background warm-up ping
+    });
+  }
+
   createRoot(document.getElementById("root")!).render(<App />);
   
